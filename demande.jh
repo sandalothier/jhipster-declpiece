@@ -1,0 +1,80 @@
+enum TypeDemande {
+  DEROGATION, SIMPLE, QUITUS_FISCAL
+}
+/**
+ * IntituleDemande entity.
+ * @author sanda
+ * c'est l'esnsemble des demandes auwquelles l'administration fiscale 
+ * repond.
+ */
+entity IntituleDemande {
+  typeDemande TypeDemande
+    intituleDemande String
+    facturation Double
+    conditionRequise Boolean
+}
+/**
+ * DemandeFaite entity.
+ * @author sanda
+ *  c'est l'entete des réponses des demandes faites par les contribuables
+ */
+entity EnteteReponseDemande {
+  dateReponseDemande String
+  civilite String
+}
+/**
+ * EnteteDemandeFaite entity.
+ * @author sanda
+ *  c'est l'entete des demandes faites par les contribuables
+ */
+entity EnteteDemandeFaite {
+  dateemandeFaite String
+}
+/**
+ * DemandeFaite entity.
+ * @author sanda
+ *  c'est l'esndemble des fermes et des existants sur 
+ *  toute l'étendue du territoire
+ */
+entity DemandeFaite {
+    quantiteDemande Long
+}
+/**
+ * DemandeFaite entity.
+ * @author sanda
+ *  c'est l'esndemble des fermes et des existants sur 
+ *  toute l'étendue du territoire
+ */
+entity ReponseDemande {
+    corpsReponse String
+}
+relationship OneToMany {
+    EnteteDemandeFaite to DemandeFaite
+}
+relationship OneToMany {
+    EnteteReponseDemande to ReponseDemande
+}
+relationship OneToOne {
+    DemandeFaite to IntituleDemande
+}
+relationship OneToOne {
+    EnteteReponseDemande to EnteteDemandeFaite
+}
+relationship OneToOne {
+    EnteteReponseDemande to EnteteDemandeFaite
+}
+relationship OneToMany {
+    CompteFiscal to EnteteDemandeFaite
+}
+relationship OneToMany {
+    CompteFiscal to EnteteReponseDemande
+}
+// Set pagination options
+paginate IntituleDemande with infinite-scroll
+paginate DemandeFaite, ReponseDemande, EnteteReponseDemande, EnteteReponseDemande with pagination
+// Use Data Transfert Objects (DTO)
+ dto EnteteDemandeFaite, DemandeFaite with mapstruct
+// Set service options to all except few
+service all with serviceImpl
+// Set an angular suffix
+// angularSuffix * with mySuffix
