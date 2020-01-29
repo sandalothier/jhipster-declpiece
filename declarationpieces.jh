@@ -1,0 +1,256 @@
+/**
+ * TypeInventaire entity.
+ * @author Sanda
+ *     C'est l'ensemble des inventaires qui peuvent avoir lieu
+ *     au sein d'une entreprise.
+ *     - Inventaire des immobilisation
+ *     - Inventaire des stocks
+ *     - Arrêté de caisse
+ */
+enum TypeInventaire {
+    INVENTAIRE_IMMOBILISATION, INVENTAIRE_STOCK, ARRETE_DE_CAISSE
+}
+/**
+ * Inventaire entity.
+ * @author Sanda
+ *     C'est l'ensemble des inventaires qui peuvent avoir lieu
+ *     au sein d'une entreprise.
+ *     - Ineventaire des immobilisation
+ *     - Inventaire des stocks
+ *     - Arrêté de caisse
+ *  relationship
+ *     - OneToMany avec PlanComptable entite sup
+ *     - ManyToOne avec PlanComptable entite sup
+ */
+entity Inventaire {
+    dateInventaire String
+    motifInventaire String
+    typeInventaire TypeInventaire
+}
+/**
+ * Comptage entity.
+ * @author Sanda
+ *     C'est l'ensemble des inventaires qui peuvent avoir lieu
+ *     au sein d'une entreprise.
+ *     - Ineventaire des immobilisation
+ *     - Inventaire des stocks
+ *     - Arrêté de caisse
+ *  relationship
+ *     - OneToMany avec PlanComptable entite sup
+ *     - ManyToOne avec PlanComptable entite sup
+ */
+entity Comptage {
+    codeInventaire String
+    article String
+    unite String
+    nombre Double
+    observation String
+}
+enum TypeFacturier {
+    NORMALISE, LOGICIEL, NON_NORMALISE
+}
+enum TypeReduction {
+    REMISE, RABAIS, RISTOURNE, ESCOMPTE
+}
+/**
+ * Facturier entity.
+ * @author Sanda
+ *  Facturier permet de verifier si tous
+ *     factures dans le système voir si elles sont:
+ *     - Toutes déclarés
+ *     - si elles sont conformes
+ *  relationship
+ *     - OneToMany avec Facture
+ */
+entity Facturier {
+    typeFacturier TypeFacturier
+    numeroDebut String
+    numeroFin String
+}
+/**
+ * Facture entity.
+ * @author Sanda
+ *  Ce sont les grandeS lignes qui composent
+ *     une facture. 
+ *     RELATION
+ *      OneToMany avec DetailFacture
+ *      ManyToOne avec Facturier   
+
+ */
+entity Facture {
+    client Boolean
+    doit Boolean
+    factureNormalise Boolean
+    numeroFacture String
+    dateEtablissement Date
+    montantTTC Double
+    montantTVA Double
+    typeReduction TypeReduction
+    montantReduction Double
+}
+/**
+ * DetailFacture entity.
+ * @author Sanda
+ * Detail facture represente l'ensemble des
+ *     articles qui compose la facture ainsi que 
+ *     le montant qui y est imputé
+ *  relationship
+ *     - ManyToOne avec Facture
+ *     - OneToMany avec DetailFacture
+ */
+entity DetailFacture {
+    article String
+    unite String
+    quantite Double
+    montant Double
+}
+/**
+ * BordereauLivraison entity.
+ * @author Sanda
+ * C'est l'entête du document ayant servi
+ *     à la livraison
+ *   RELATION
+ *      OneToMany avec Livraison
+ *      ManyToOne avec Facture   
+
+ */
+entity BordereauLivraison {
+    dateLivraison Date
+    refLivraison String
+}
+/**
+ * Livraison entity.
+ * @author Sanda
+ * C'est la recap de ce qui a été véritablement
+ *     livré
+ *   RELATION
+ *      ManyToOne avec BordereauLivraison   
+ */
+entity Livraison {
+    qteLivre Double
+    unite String
+}
+/**
+ * CompteBancaire entity.
+ * @author Sanda
+ * C'est la liste de compte de tous les 
+ *    contribuables
+ *   RELATION
+ *      ManyToOne avec Contribuable   
+ *      OneToMany avec ReleveCompte
+ */
+entity CompteBancaireClient {
+    dateOuverture Date
+    numCompte String
+}
+/**
+ * DetailReleveCompte entity.
+ * @author Sanda
+ * C'est la liste de compte de tous les 
+ *    contribuables
+ *   RELATION
+ *      ManyToOne avec ReleveCompte   
+ */
+entity DetailReleveCompteClient {
+    dateTransaction Date required
+    detailTransaction String
+    operationBancaire OperationBancaire
+    dateValeur Date
+    debit Boolean
+    montantOperation Double
+    solde Double
+}
+/**
+ * Chequier entity.
+ * @author Sanda
+ *  Chèquier permet de verifier si tous
+ *     chèques dans le système voir si elles sont:
+ *     - Toutes déclarés
+ *     - si elles sont conformes
+ *  relationship
+ *     - OneToMany avec Chèque
+ */
+entity Chequier {
+    dateDelivrance Date
+    numeroDebut String
+    numeroFin String
+}
+/**
+ * Cheque entity.
+ * @author Sanda
+ *  Chèque permet de verifier si tous
+ *     chèques dans le système voir si elles sont:
+ *     - Toutes déclarés
+ *     - si elles sont conformes
+ *  relationship
+ *     - OneToMany avec Chèque
+ *        - ManyToOne avec Facture
+ */
+entity Cheque {
+    numeroCheque String
+    dateDelivrance Date
+    montantCheque Double
+}
+/**
+ * One to many relationship.
+ */
+relationship OneToMany {
+    Facturier to Facture
+}
+relationship OneToMany {
+    CompteBancaireClient to ReleveCompte
+}
+relationship OneToMany {
+    ReleveCompte to DetailReleveCompteClient
+}
+relationship OneToMany {
+    Chequier to Cheque
+}
+relationship OneToMany {
+    Cheque to CompteBancaireClient
+}
+relationship OneToMany {
+    CompteBancaireClient to Cheque
+}
+relationship OneToMany {
+    Cheque to Facture
+}
+relationship OneToMany {
+    Cheque to Ecriture
+}
+relationship OneToMany {
+    Facture to Ecriture
+}
+/**
+ * One to many relationship.
+ */
+relationship OneToMany {
+    Inventaire to Comptage
+}
+/**
+ * One to many relationship.
+ */
+relationship OneToMany {
+    Facture to DetailFacture
+}
+/**
+ * One to many relationship.
+ */
+relationship OneToMany {
+    Facture to BordereauLivraison
+}
+/**
+ * One to many relationship.
+ */
+relationship OneToMany {
+    BordereauLivraison to Livraison
+}
+// Set pagination options
+paginate Inventaire, Comptage, Facturier, Facture, BordereauLivraison with infinite-scroll
+paginate Facture, DetailFacture,BordereauLivraison with pagination
+// Use Data Transfert Objects (DTO)
+dto Inventaire, Comptage, Facturier, Facture, DetailFacture, BordereauLivraison, Livraison, CompteBancaireClient, DetailReleveCompteClient, Chequier, Cheque with mapstruct
+// Set service options to all except few
+service all with serviceImpl
+// Set an angular suffix
+// angularSuffix * with mySuffix
